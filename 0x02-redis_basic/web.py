@@ -7,26 +7,26 @@ from typing import Callable
 
 
 redis_store = redis.Redis()
-"""Redis instance"""
 
 
-def data_cacher(method: Callable) -> Callable:
+def count_requests(method: Callable) -> Callable:
     """Caches output of fetched data"""
     @wraps(method)
-    def invoker(url) -> str:
-        """The wrapper function for caching output"""
-        redis_store.incr(f'count:{url}')
-        result = redis_store.get(f'result:{url}')
-        if result:
-            return result.decode('utf-8')
-        result = method(url)
-        redis_store.set(f'count:{url}', 0)
-        redis_store.setex(f'result:{url}', 10, result)
-        return result
-    return invoker
+    def wrapper(url):  # sourcery skip: use-named-expression
+        """ Wrapper for decorator """
+        redis_.incr(f"count:{url}")
+        cached_html = redis_.get(f"cached:{url}")
+        if cached_html:
+            return cached_html.decode('utf-8')
+        html = method(url)
+        redis_.setex(f"cached:{url}", 10, html)
+        return html
+
+    return wrapper
 
 
-@data_cacher
+@count_requests
 def get_page(url: str) -> str:
     """Return the content of a URL after caching the response"""
-    return requests.get(url).text
+    req = requests.get(url)
+    return req.text
