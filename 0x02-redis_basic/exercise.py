@@ -8,10 +8,10 @@ from typing import Any, Callable, Union
 
 
 def count_calls(method: Callable) -> Callable:
-    """Tracks the number of calls made to a method in a Cache class"""
+    """Tracks the number of calls made to a method in Cache class"""
     @wraps(method)
     def invoker(self, *args, **kwargs) -> Any:
-        """Invokes the given method after incrementing its call counter"""
+        """Invoke the method after incrementing its call counter"""
         if isinstance(self._redis, redis.Redis):
             self._redis.incr(method.__qualname__)
         return method(self, *args, **kwargs)
@@ -73,7 +73,11 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Callable = None) -> Union[str, bytes, int, float]:
+    def get(
+            self,
+            key: str,
+            fn: Callable = None,
+            ) -> Union[str, bytes, int, float]:
         """Retrieves a value from a Redis data storage"""
         data = self._redis.get(key)
         return fn(data) if fn is not None else data
