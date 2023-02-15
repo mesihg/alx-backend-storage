@@ -4,12 +4,11 @@
 from functools import wraps
 import redis
 import requests
-from typing import Callable
 
 redis_ = redis.Redis()
 
 
-def count_requests(method: Callable) -> Callable:
+def count_requests(method):
     """ Caches output of fetched data """
     @wraps(method)
     def wrapper(url):
