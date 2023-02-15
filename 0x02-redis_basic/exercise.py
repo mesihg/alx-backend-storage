@@ -6,7 +6,6 @@ from functools import wraps
 from typing import Any, Callable, Union
 
 
-
 def count_calls(method: Callable) -> Callable:
     """Tracks the number of calls made to a method in Cache class"""
     @wraps(method)
