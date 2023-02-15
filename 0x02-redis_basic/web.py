@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Task 5 module"""
+""" Task 5 Module """
+
+from functools import wraps
 import redis
 import requests
-from functools import wraps
 from typing import Callable
 
-
-redis_store = redis.Redis()
+redis_ = redis.Redis()
 
 
 def count_requests(method: Callable) -> Callable:
-    """Caches output of fetched data"""
+    """ Caches output of fetched data """
     @wraps(method)
-    def wrapper(url):  # sourcery skip: use-named-expression
+    def wrapper(url):
         """ Wrapper for decorator """
         redis_.incr(f"count:{url}")
         cached_html = redis_.get(f"cached:{url}")
@@ -27,6 +27,6 @@ def count_requests(method: Callable) -> Callable:
 
 @count_requests
 def get_page(url: str) -> str:
-    """Return the content of a URL after caching the response"""
+    """ Return the content of a URL after caching the response """
     req = requests.get(url)
     return req.text
