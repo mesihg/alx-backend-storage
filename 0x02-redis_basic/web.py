@@ -9,7 +9,6 @@ from typing import Callable
 redis_store = redis.Redis()
 
 
-
 def data_cacher(method: Callable) -> Callable:
     '''Caches the output of data'''
     @wraps(method)
